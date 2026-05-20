@@ -1,0 +1,81 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getCollection } from 'astro:content';
+import FormattedDate from '../components/FormattedDate.astro';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>👋 你好，我是 GxZzz</h1>
+			<p>
+				这里是我的个人技术博客，记录编程学习、项目实践和技术思考。
+			</p>
+			<p>欢迎 <a href="/blog">浏览博客文章</a> 或 <a href="/about">了解更多关于我</a>。</p>
+
+			<h2>最新文章</h2>
+			<ul class="post-list">
+				{
+					posts.slice(0, 5).map((post) => (
+						<li class="post-item">
+							<a href={`/blog/${post.id}/`}>
+								<span class="post-title">{post.data.title}</span>
+								<span class="post-date"><FormattedDate date={post.data.pubDate} /></span>
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.post-list {
+		list-style: none;
+		padding: 0;
+	}
+	.post-item {
+		margin-bottom: 0.5em;
+	}
+	.post-item a {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		padding: 0.5em 0;
+		text-decoration: none;
+		color: rgb(var(--gray-dark));
+		border-bottom: 1px solid rgb(var(--gray-light));
+	}
+	.post-item a:hover {
+		color: var(--accent);
+	}
+	.post-date {
+		font-size: 0.85em;
+		color: rgb(var(--gray));
+		flex-shrink: 0;
+		margin-left: 1em;
+	}
+	@media (max-width: 720px) {
+		.post-item a {
+			flex-direction: column;
+			gap: 0.2em;
+		}
+		.post-date {
+			margin-left: 0;
+		}
+	}
+</style>
